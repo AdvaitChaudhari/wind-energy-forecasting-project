@@ -1,24 +1,27 @@
-# 🌬️ Wind Energy Forecasting
+# Wind speed forecasting – Tibau
 
-A machine learning project for forecasting wind energy generation using real-world datasets. This repository demonstrates skills in **AI, time-series analysis, and coding best practices** while applying them to the renewable energy sector.
+Next-hour wind speed forecast from the previous 24 hours of measurements, using a two-layer LSTM.
 
----
+**Data:** `tibau_wind_data.csv` – hourly wind speed [m/s] and direction [°], March 2020 onwards.
 
-## 🔥 Project Highlights
-- **AI & Machine Learning**: Implemented forecasting models for wind energy using Python.
-- **Data Science Workflow**: Data preprocessing, exploratory analysis, visualization, and model evaluation.
-- **Renewable Energy Application**: Supports grid stability and renewable integration with predictive insights.
-- **Reproducible Code**: Clean Jupyter Notebook and structured repository for easy usage.
+**What's in the notebook**
+- gap filling, wind direction encoded as sin/cos (so 359° and 1° are close)
+- 24-hour sliding windows, chronological 70/15/15 split, scaler fitted on training data only
+- LSTM (64 → 32 units) with early stopping
+- comparison against a persistence forecast (next hour = current hour)
 
----
+**Results (test period)**
 
-## 📊 Skills Demonstrated
-- **Python for AI/ML**: NumPy, Pandas, Matplotlib, Scikit-learn, TensorFlow/Keras (if used).
-- **Data Analysis & Visualization**: Handling time-series wind data, trends, and forecasting patterns.
-- **Model Building & Evaluation**: Applying ML models for renewable energy forecasting.
-- **Reproducibility**: Professional repo structure, version control, and documentation.
+| Model | MAE [m/s] | RMSE [m/s] |
+|---|---|---|
+| Persistence | 0.251 | 0.333 |
+| **LSTM (24 h look-back)** | **0.160** | **0.215** |
 
----
+The LSTM cuts the error by about a third compared with persistence. My first version, which only saw 1 timestep, was
+actually slightly *worse* than persistence. Using a full day of history made the difference. Next step: a 6–24 h
+horizon, which is what grid operators and traders plan on.
 
-## 🌱 Motivation
-Accurate wind energy forecasting is vital for **grid planning, trading, and renewable integration**. This project demonstrates the use of **AI-driven predictive modeling** to address real-world energy challenges.
+**Run it:** open `Wind_Energy_Forecasting.ipynb` in Jupyter or Colab, with the CSV next to it.
+`pip install pandas scikit-learn matplotlib tensorflow`
+
+*University group project (Group B), M.Sc. Smart Energy Systems.*
